@@ -1,0 +1,21 @@
+{
+  "extends": ["tslint:recommended"],
+  "rules": {
+    "arrow-parens": false,
+    "import-name": false,
+    "member-access": false,
+    "no-console": false,
+    "no-increment-decrement": false,
+    "no-namespace": false,
+    "no-unused-expression": false,
+    "no-var-requires": false,
+    "object-literal-sort-keys": false,
+    "only-arrow-functions": false,
+    "quotemark": [true, "single"],
+    "space-before-function-paren": false,
+    "ordered-imports": true,
+    "strict-boolean-expressions": false,
+    "no-else-after-return": false,
+    "space-within-parens": true
+  }
+}
