@@ -10,7 +10,7 @@ process.on('unhandledRejection', e => { throw e; });
 
 (async () => {
   try {
-    const PORT = process.env.PORT || 8080;
+    const PORT = Number(process.env.PORT) || 8080;
     const app = new Koa();
     app.use(bodyParser());
     app.use(cors());

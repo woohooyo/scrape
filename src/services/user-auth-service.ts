@@ -12,7 +12,7 @@ export class UserAuthService {
   public async addUser(user: IUserAuth) {
     const existingUser = await this.getUser({ username: user.username });
     if (existingUser) {
-      badRequest(`Username[${user.username}] already exist.`);
+      throw badRequest(`Username[${user.username}] already exist.`);
     }
     await this.userAuthModel.insertOne({
       username: user.username,
