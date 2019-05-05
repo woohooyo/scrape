@@ -1,0 +1,13 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:4.0
+    restart: always
+    env_file: ./.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_CONFIG_ADMIN_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_CONFIG_ADMIN_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - './db/mongo:/data/db'

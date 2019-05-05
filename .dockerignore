@@ -1,0 +1,11 @@
+**/.tags
+log/
+tmp/
+node_modules/
+README.*
+coverage/
+.DS_Store
+.git
+commit_msg
+**/.swp
+.nvmrc

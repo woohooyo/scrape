@@ -3,6 +3,7 @@
 # dependencies
 node_modules/
 package-lock.json
+.env
 
 # testing
 coverage/
@@ -11,3 +12,9 @@ npm-debug.log*
 
 .DS_Store
 .vscode
+
+# build
+output/
+
+#db data
+db/
