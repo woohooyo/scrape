@@ -9,4 +9,9 @@ export class UserController {
     const body: IUserAuth = ctx.request.body;
     ctx.body = await userAuthService.addUser(body);
   }
+
+  public static async put(ctx: IRouterContext) {
+    const body: IUserAuth = ctx.request.body;
+    ctx.body = await userAuthService.updateUser(body);
+  }
 }
