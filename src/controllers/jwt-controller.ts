@@ -7,7 +7,6 @@ const userAuthService = new UserAuthService();
 export class AuthController {
   public static async post(ctx: Router.IRouterContext) {
     const body: IUserAuth = ctx.request.body;
-    const response = await userAuthService.getToken(body);
-    ctx.body = response;
+    ctx.body = await userAuthService.getToken(body);
   }
 }

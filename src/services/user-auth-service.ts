@@ -13,7 +13,6 @@ export class UserAuthService {
     await this.userAuthModel.insertOne({
       username: user.username,
       password: user.password,
-      isDeleted: false,
       createdAt: new Date(),
       createdBy: 'Add User Api',
     });

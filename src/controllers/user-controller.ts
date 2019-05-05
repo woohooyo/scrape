@@ -7,8 +7,6 @@ const userAuthService = new UserAuthService();
 export class UserController {
   public static async post(ctx: IRouterContext) {
     const body: IUserAuth = ctx.request.body;
-    const response = await userAuthService.addUser(body);
-    ctx.body = response;
+    ctx.body = await userAuthService.addUser(body);
   }
-
 }
