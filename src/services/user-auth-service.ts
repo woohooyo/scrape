@@ -45,7 +45,7 @@ export class UserAuthService {
     await this.userAuthModel.updateOne(updateContent, where);
     const updatedUser = await this.getUser(where);
     return {
-      message: 'Update user successs!',
+      message: 'Update user success!',
       originUser,
       updatedUser,
     };
