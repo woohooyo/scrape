@@ -1,136 +1,38 @@
 import * as Cheerio from 'cheerio';
 import { mongoConfig } from '../../config';
 import { IProduct, Product } from '../../mongo/models/product';
+import { HttpClient } from './http-client';
+import { ProductFactory } from './productFactory';
 
 export class Scrape {
   private productModel = new Product(mongoConfig);
+  private httpClient = new HttpClient();
+  private productFactory = new ProductFactory();
+  private products: IProduct[] = [];
 
-  public async getProduct (productContent: Cheerio) {
-    const product: IProduct = {};
-    product.isDaTaoKe = await this.getIsDaTaoKe();
-    product.isTaoKeYi = await this.getIsTaoKeYi();
-    product.productId = await this.getProductId();
-    product.TaoBaoProductId = await this.getTaoBaoProductId();
-    product.detailUrl = await this.getDetailUrl();
-    product.title = await this.getTitle();
-    product.subTitle = await this.getSubTitle();
-    product.image = await this.getImage();
+  public async SyncProducts() {
+    await this.getProducts();
+    await this.pushMongo();
     return;
   }
 
-  private async getIsDaTaoKe(): Promise<boolean> {
+  private async pushMongo() {
     return;
   }
 
-  private async getIsTaoKeYi(): Promise<boolean> {
-    return;
+  private async getProducts() {
+    const pages = await this.httpClient.fetch();
+    for (const page of pages) {
+      const $ = Cheerio.load(page);
+      const productList = $('.goods-item-content');
+      if (productList && productList.length !== 0) {
+        productList.each(async (index, product) => {
+          const $el = $(product);
+          const scrappedProduct = await this.productFactory.getProduct($el);
+          this.products.push(scrappedProduct);
+        });
+      }
+    }
   }
 
-  private async getProductId(): Promise<number> {
-    return;
-  }
-
-  private async getTaoBaoProductId(): Promise<number> {
-    return;
-  }
-
-  private async getDetailUrl(): Promise<string> {
-    return;
-  }
-
-  private async getTitle(): Promise<string> {
-    return;
-  }
-
-  private async getSubTitle(): Promise<string> {
-    return;
-  }
-
-  private async getImage(): Promise<string> {
-    return;
-  }
-
-  private async getCategoryId(): Promise<number> {
-    return;
-  }
-
-  private async getPrice(): Promise<number> {
-    return;
-  }
-
-  private async getIsTianMao(): Promise<boolean> {
-    return;
-  }
-
-  private async getSalesVolume(): Promise<number> {
-    return;
-  }
-
-  private async getScore(): Promise<number> {
-    return;
-  }
-
-  private async getVendorId(): Promise<number> {
-    return;
-  }
-
-  private async getPlannedCommission(): Promise<number> {
-    return;
-  }
-
-  private async getXxxxxxCommission(): Promise<number> {
-    return;
-  }
-
-  private async getPlanUrl(): Promise<string> {
-    return;
-  }
-
-  private async getPlanStatus(): Promise<boolean> {
-    return;
-  }
-
-  private async getCopywriting(): Promise<string> {
-    return;
-  }
-
-  private async getCouponPage() {
-    return;
-  }
-
-  private async getCouponId(): Promise<string> {
-    return;
-  }
-
-  private async getCouponPrice(): Promise<number> {
-    return;
-  }
-
-  private async getCouponDiscontnPrice(): Promise<number> {
-    return;
-  }
-
-  private async getCouponEndTime(): Promise<Date> {
-    return;
-  }
-
-  private async getCouponRemainingAmount(): Promise<number> {
-    return;
-  }
-
-  private async getCouponReceivedAmount(): Promise<number> {
-    return;
-  }
-
-  private async getCouponConditionPrice(): Promise<number> {
-    return;
-  }
-
-  private async getCouponPhoneShortLink(): Promise<string> {
-    return;
-  }
-
-  private async getCouponPhoneLink(): Promise<string> {
-    return;
-  }
 }

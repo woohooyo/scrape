@@ -20,7 +20,7 @@ export class UserAuthService {
   }
 
   private verifyUser(user: IUserAuth, inputPassword: string) {
-    if (user.password !== inputPassword) {
+    if (!user || user.password !== inputPassword) {
       throw unauthorized('User password is invalid.');
     }
   }
