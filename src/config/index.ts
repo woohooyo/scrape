@@ -17,4 +17,5 @@ export const mongoConfig: Config.IConfigMongo = {
 };
 
 export const jwtIncludeRoutes: string[] = [
+  '/api/product/',
 ];
