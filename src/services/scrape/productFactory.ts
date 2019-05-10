@@ -1,12 +1,18 @@
 import { IProduct } from '../../mongo/models/product';
 
 export class ProductFactory {
+  private batchId: number;
+
+  public setBatchId(batchId: number) {
+    this.batchId = batchId;
+  }
 
   public async getProduct (rawContent: Cheerio): Promise<IProduct> {
     const product: IProduct = {
       coupon: {},
     };
     product.title = this.getTitle(rawContent);
+    product.batchId = this.batchId;
     product.discountPrice = this.getDiscountPrice(rawContent);
     product.salesVolume = this.getSalesVolume(rawContent);
     product.commissionPercent = this.getCommissionPercent(rawContent);

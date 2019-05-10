@@ -12,13 +12,27 @@ export class Scrape {
   private products: IProduct[] = [];
 
   public async SyncProducts() {
+    const batchId = await this.getNextBatchId();
+    this.productFactory.setBatchId(batchId);
     await this.getProducts();
     await this.fillIsSellerCoupon();
     await this.pushMongo();
   }
 
   private async pushMongo() {
-    return;
+    const productBulk =  await this.productModel.initBulkOps();
+    for (const product of this.products) {
+      product.createdBy = 'scrape services';
+      product.createdAt = new Date();
+      await productBulk.insert(product);
+    }
+    await productBulk.execute();
+  }
+
+  private async getNextBatchId(): Promise<number> {
+    const allProduct = await this.productModel.get({}, null, 'batchId', -1);
+    if (!allProduct[0] || !allProduct[0].batchId) { return 1; }
+    return allProduct[0].batchId + 1;
   }
 
   private async getProducts() {

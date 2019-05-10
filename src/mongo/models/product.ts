@@ -8,6 +8,7 @@ export interface ICoupon {
 }
 
 export interface IProduct extends Mongo.IEditableRecord {
+  batchId?: number;
   isTaoKeYi?: boolean;
   productId?: string;
   sellerId?: string;
