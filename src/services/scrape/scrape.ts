@@ -1,6 +1,7 @@
 import * as Cheerio from 'cheerio';
 import * as _ from 'lodash';
 import { mongoConfig } from '../../config';
+import { Logger } from '../../lib/logger';
 import { IProduct, Product } from '../../mongo/models/product';
 import { HttpClient } from './http-client';
 import { ProductFactory } from './productFactory';
@@ -10,6 +11,7 @@ export class Scrape {
   private httpClient = new HttpClient();
   private productFactory = new ProductFactory();
   private products: IProduct[] = [];
+  private logger = new Logger(true);
 
   public async SyncProducts() {
     const batchId = await this.getNextBatchId();
@@ -30,9 +32,9 @@ export class Scrape {
   }
 
   private async getNextBatchId(): Promise<number> {
-    const allProduct = await this.productModel.get({}, null, 'batchId', -1);
-    if (!allProduct[0] || !allProduct[0].batchId) { return 1; }
-    return allProduct[0].batchId + 1;
+    const product = await this.productModel.getOne({}, {sort: {batchId: -1}});
+    if (!product || !product.batchId) { return 1; }
+    return product.batchId + 1;
   }
 
   private async getProducts() {

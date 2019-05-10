@@ -7,29 +7,56 @@ export class HttpClient {
   private totalPage = 1;
 
   public async fetch() {
-    do {
-      const page = await this.getProductListPage();
-      this.pages.push(page);
-      this.setTotalPage(page);
-      this.setNextPage();
-    } while (!this.isLastPage());
-    return this.pages;
+    let retry = 0;
+    try {
+      do {
+        const page = await this.getProductListPage();
+        this.pages.push(page);
+        this.setTotalPage(page);
+        this.setNextPage();
+      } while (!this.isLastPage());
+      return this.pages;
+    } catch (error) {
+      if (retry < 3) {
+        retry ++;
+        await this.fetch();
+      }
+      throw error;
+    }
   }
 
   public async getCopywritingPage(productId: string) {
-    const response = await Axios.get(`http://www.dataoke.com/gettpl?gid=${productId}`);
-    return response.data;
+    let retry = 0;
+    try {
+      const response = await Axios.get(`http://www.dataoke.com/gettpl?gid=${productId}`);
+      return response.data;
+    } catch (error) {
+      if (retry < 3) {
+        retry ++;
+        await this.fetch();
+      }
+      throw error;
+    }
   }
 
   public async getTaoKeYiData(couponUrl: string) {
-    const response = await Axios.post(
-      'https://www.tkeasy.com/Interface/search',
-      {
-        keyword: couponUrl,
-        groupid: 0,
-      },
-    );
-    return response.data;
+    let retry = 0;
+    try {
+      const response = await Axios.post(
+        'https://www.tkeasy.com/Interface/search',
+        {
+          keyword: couponUrl,
+          groupid: 0,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      if (retry < 3) {
+        retry ++;
+        await this.fetch();
+      }
+      throw error;
+    }
   }
 
   private setTotalPage(page: string) {
