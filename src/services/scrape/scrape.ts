@@ -13,8 +13,8 @@ export class Scrape {
 
   public async SyncProducts() {
     await this.getProducts();
+    await this.fillIsSellerCoupon();
     await this.pushMongo();
-    return;
   }
 
   private async pushMongo() {
@@ -40,8 +40,13 @@ export class Scrape {
     const $el = $(productContent);
     const scrappedProduct = await this.productFactory.getProduct($el);
     const couponUrl = await this.getCouponUrl(scrappedProduct.productId);
+    scrappedProduct.sellerId = await this.getSellerId(couponUrl);
     scrappedProduct.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
     this.products.push(scrappedProduct);
+  }
+
+  private async getSellerId(couponUrl: string): Promise<string> {
+    return couponUrl.match(/sellerId=(\d+)/i)[1];
   }
 
   private async getCouponUrl(productId: string): Promise<string> {
@@ -53,5 +58,22 @@ export class Scrape {
   private async getIsTaoKeYi(couponUrl: string): Promise<boolean> {
     const taoKeYiData = await this.httpClient.getTaoKeYiData(couponUrl);
     return _.includes(taoKeYiData, '大淘客');
+  }
+
+  private fillIsSellerCoupon() {
+    const groupedProducts = _.groupBy(this.products, (product) => product.sellerId);
+    const sellerCouponProductIds: string[] = [];
+    _.forIn(groupedProducts, (value, key) => {
+      if (value.length > 1) {
+        value.forEach((product) => sellerCouponProductIds.push(product.productId));
+      }
+    });
+    this.products.forEach((value) => {
+      if (sellerCouponProductIds.includes(value.productId)) {
+        value.isSellerCoupon = true;
+      } else {
+        value.isSellerCoupon = false;
+      }
+    });
   }
 }

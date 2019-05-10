@@ -23,7 +23,7 @@ export class ProductFactory {
 
   private getDiscountPrice(rawContent: Cheerio): number {
     const dataConfig = rawContent.find('.goods-img a').attr('data-config').trim();
-    return Number(dataConfig.match(/price\:\'(\d+(\.\d+)*)\'/)[1]);
+    return Number(dataConfig.match(/price\:\'(\d+(\.\d+)*)\'/i)[1]);
   }
 
   private getSalesVolume(rawContent: Cheerio): string {
@@ -40,7 +40,7 @@ export class ProductFactory {
 
   private getCouponPrice(rawContent: Cheerio): number {
     const dataConfig = rawContent.find('.goods-img a').attr('data-config').trim();
-    return Number(dataConfig.match(/coupon\:\'(\d+(\.\d+)*)\'/)[1]);
+    return Number(dataConfig.match(/coupon\:\'(\d+(\.\d+)*)\'/i)[1]);
   }
 
   private getRemainingAmount(rawContent: Cheerio): number {
