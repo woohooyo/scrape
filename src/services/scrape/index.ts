@@ -1,6 +1,10 @@
 import { Scrape } from './scrape';
 
-(() => {
-  const scrape = new Scrape();
-  scrape.SyncProducts();
+(async () => {
+  try {
+    const scrape = new Scrape();
+    await scrape.SyncProducts();
+  } catch (error) {
+    console.log(error);
+  }
 })();

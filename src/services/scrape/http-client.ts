@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import * as Cheerio from 'cheerio';
 
 export class HttpClient {
   private pages: string[] = [];
@@ -9,13 +10,38 @@ export class HttpClient {
     do {
       const page = await this.getProductListPage();
       this.pages.push(page);
+      this.setTotalPage(page);
       this.setNextPage();
     } while (!this.isLastPage());
     return this.pages;
   }
 
+  public async getCopywritingPage(productId: string) {
+    const response = await Axios.get(`http://www.dataoke.com/gettpl?gid=${productId}`);
+    return response.data;
+  }
+
+  public async getTaoKeYiData(couponUrl: string) {
+    const response = await Axios.post(
+      'https://www.tkeasy.com/Interface/search',
+      {
+        keyword: couponUrl,
+        groupid: 0,
+      },
+    );
+    return response.data;
+  }
+
+  private setTotalPage(page: string) {
+    if (this.currentPage === 1) {
+      const $ = Cheerio.load(page);
+      const totalPage = $('select[name="page"] option').length;
+      this.totalPage = totalPage;
+    }
+  }
+
   private async getProductListPage() {
-    const response =  await Axios.get('http://www.dataoke.com/qlist');
+    const response = await Axios.get(`http://www.dataoke.com/qlist?page=${this.currentPage}`);
     return response.data;
   }
 

@@ -2,17 +2,18 @@ import { Mongo } from '../../lib/type';
 import { EditableMongoAccessor } from '../editable-mongo-accessor';
 
 export interface ICoupon {
-  discountPrice?: number;
+  couponPrice?: number;
   remainingAmount?: number;
   totalAmount?: number;
-  conditionPrice?: number;
 }
 
 export interface IProduct extends Mongo.IEditableRecord {
+  isTaoKeYi?: boolean;
+  productId?: string;
   title?: string;
-  price?: number;
-  salesVolume?: number;
-  commissionPercent?: number;
+  discountPrice?: number;
+  salesVolume?: string;
+  commissionPercent?: string;
   coupon?: ICoupon;
 }
 
