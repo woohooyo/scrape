@@ -27,16 +27,21 @@ export class Scrape {
       const $ = Cheerio.load(page);
       const productList = $('.goods-item-content');
       if (productList && productList.length !== 0) {
+        const productTasks = [];
         productList.each(async (index, product) => {
-          const $el = $(product);
-          this.productFactory.setRawContent($el);
-          const scrappedProduct = await this.productFactory.getProduct();
-          const couponUrl = await this.getCouponUrl(scrappedProduct.productId);
-          scrappedProduct.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
-          this.products.push(scrappedProduct);
+          productTasks.push(this.fillProduct($, product));
         });
+        await Promise.all(productTasks);
       }
     }
+  }
+
+  private async fillProduct($: CheerioStatic, productContent: CheerioElement) {
+    const $el = $(productContent);
+    const scrappedProduct = await this.productFactory.getProduct($el);
+    const couponUrl = await this.getCouponUrl(scrappedProduct.productId);
+    scrappedProduct.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
+    this.products.push(scrappedProduct);
   }
 
   private async getCouponUrl(productId: string): Promise<string> {
