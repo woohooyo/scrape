@@ -1,6 +1,6 @@
 import Axios from 'axios';
 import * as Cheerio from 'cheerio';
-import { Logger } from '../../lib/logger';
+import { Logger } from '../lib/logger';
 
 export class HttpClient {
   private pages: string[] = [];
