@@ -55,15 +55,16 @@ export class Scrape {
       if (productList && productList.length !== 0) {
         const productTasks = [];
         productList.each(async (index, product) => {
-          productTasks.push(this.fillProduct($, product));
+          productTasks.push(this.fillProduct($, product, index * 100));
         });
         await Promise.all(productTasks);
       }
     }
   }
 
-  private async fillProduct($: CheerioStatic, productContent: CheerioElement) {
+  private async fillProduct($: CheerioStatic, productContent: CheerioElement, delay: number = 0) {
     try {
+      await new Promise(resolve => setTimeout(resolve, delay));
       const $el = $(productContent);
       const scrappedProduct = await this.productFactory.getProduct($el);
       const couponUrl = await this.getCouponUrl(scrappedProduct.productId);
