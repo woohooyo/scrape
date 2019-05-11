@@ -51,6 +51,18 @@ export class MongoAccessor<T extends object> {
     }
   }
 
+  public async getOne(
+    query: FilterQuery<T>, options?: FindOneOptions,
+    orderField?: string | object | object[], direction?: number) {
+    await this.getDb();
+    const table = this.db.collection<T>(this.collectionName);
+    if (!_.isEmpty(orderField)) {
+      return await table.findOne(query, options);
+    } else {
+      return await table.findOne(query, options);
+    }
+  }
+
   public async insertOne(fullDoc: T, bulkOps?: OrderedBulkOperation, options?: CollectionInsertOneOptions) {
     await this.getDb();
     const table = this.db.collection<T>(this.collectionName);

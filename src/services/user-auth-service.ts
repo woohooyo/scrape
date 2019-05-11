@@ -45,7 +45,7 @@ export class UserAuthService {
     await this.userAuthModel.updateOne(updateContent, where);
     const updatedUser = await this.getUser(where);
     return {
-      message: 'Update user successs!',
+      message: 'Update user success!',
       originUser,
       updatedUser,
     };
@@ -62,7 +62,7 @@ export class UserAuthService {
   }
 
   private verifyUser(user: IUserAuth, inputPassword: string) {
-    if (user.password !== inputPassword) {
+    if (!user || user.password !== inputPassword) {
       throw unauthorized('User password is invalid.');
     }
   }
