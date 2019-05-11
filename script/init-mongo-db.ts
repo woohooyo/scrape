@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import { MongoClient } from 'mongodb';
+import { Db, MongoClient } from 'mongodb';
 
 process.on('unhandledRejection', e => { throw e; });
 
-const addDBAccount = async (adminDb, userName, password, dbName) => {
+const addDBAccount = async (adminDb: Db, userName, password, dbName) => {
   await adminDb.addUser(userName, password, {
     roles: [
       { role: 'readWrite', db: dbName },

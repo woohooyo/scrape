@@ -8,17 +8,27 @@ import { ProductFactory } from './productFactory';
 
 export class Scrape {
   private productModel = new Product(mongoConfig);
-  private httpClient = new HttpClient();
+  private httpClient: HttpClient;
   private productFactory = new ProductFactory();
   private products: IProduct[] = [];
-  private logger = new Logger(true);
+  private logger: Logger;
+
+  constructor() {
+    this.logger = new Logger(true);
+    this.httpClient = new HttpClient(this.logger);
+  }
 
   public async SyncProducts() {
-    const batchId = await this.getNextBatchId();
-    this.productFactory.setBatchId(batchId);
-    await this.getProducts();
-    await this.fillIsSellerCoupon();
-    await this.pushMongo();
+    try {
+      const batchId = await this.getNextBatchId();
+      this.productFactory.setBatchId(batchId);
+      await this.getProducts();
+      await this.fillIsSellerCoupon();
+      await this.pushMongo();
+    } catch (error) {
+      console.log(error);
+      await this.logger.error('Sync product error.', error);
+    }
   }
 
   private async pushMongo() {
@@ -53,12 +63,17 @@ export class Scrape {
   }
 
   private async fillProduct($: CheerioStatic, productContent: CheerioElement) {
-    const $el = $(productContent);
-    const scrappedProduct = await this.productFactory.getProduct($el);
-    const couponUrl = await this.getCouponUrl(scrappedProduct.productId);
-    scrappedProduct.sellerId = await this.getSellerId(couponUrl);
-    scrappedProduct.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
-    this.products.push(scrappedProduct);
+    try {
+      const $el = $(productContent);
+      const scrappedProduct = await this.productFactory.getProduct($el);
+      const couponUrl = await this.getCouponUrl(scrappedProduct.productId);
+      scrappedProduct.sellerId = await this.getSellerId(couponUrl);
+      scrappedProduct.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
+      this.products.push(scrappedProduct);
+    } catch (error) {
+      console.log('fill product error');
+      await this.logger.warn('fill product error', error);
+    }
   }
 
   private async getSellerId(couponUrl: string): Promise<string> {

@@ -1,10 +1,14 @@
 import { Mongo } from '../../lib/type';
 import { EditableMongoAccessor } from '../editable-mongo-accessor';
-
+export interface IErrorMessage {
+  stack: string;
+  name: string;
+  message: string;
+}
 export interface ILog extends Mongo.IEditableRecord {
   errorType?: 'Info'| 'Warn' | 'Error';
   message: string;
-  error?: Error;
+  error?: IErrorMessage;
   groupId?: string;
 }
 

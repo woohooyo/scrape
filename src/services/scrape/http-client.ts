@@ -1,13 +1,18 @@
 import Axios from 'axios';
 import * as Cheerio from 'cheerio';
+import { Logger } from '../../lib/logger';
 
 export class HttpClient {
   private pages: string[] = [];
   private currentPage = 1;
   private totalPage = 1;
+  private logger: Logger;
 
-  public async fetch() {
-    let retry = 0;
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
+
+  public async fetch(retry: number = 0) {
     try {
       do {
         const page = await this.getProductListPage();
@@ -19,8 +24,10 @@ export class HttpClient {
     } catch (error) {
       if (retry < 3) {
         retry ++;
-        await this.fetch();
+        await this.logger.warn(`Get dataoke page retry: ${retry}`, error);
+        await this.fetch(retry);
       }
+      await this.logger.error('Get dataoke page error', error);
       throw error;
     }
   }
@@ -33,8 +40,10 @@ export class HttpClient {
     } catch (error) {
       if (retry < 3) {
         retry ++;
+        await this.logger.warn(`Get copywriting page retry: ${retry}`, error);
         await this.fetch();
       }
+      await this.logger.error('Get copywriting page error', error);
       throw error;
     }
   }
@@ -53,8 +62,10 @@ export class HttpClient {
     } catch (error) {
       if (retry < 3) {
         retry ++;
+        await this.logger.warn(`Get taokeyi data retry: ${retry}`, error);
         await this.fetch();
       }
+      await this.logger.error('Get taokeyi data error', error);
       throw error;
     }
   }

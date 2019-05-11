@@ -1,6 +1,6 @@
 import * as uuid from 'uuid/v4';
 import { mongoConfig } from '../config';
-import { ILog, Log } from '../mongo/models/log';
+import { ILog, Log, IErrorMessage } from '../mongo/models/log';
 
 export class Logger {
   private logModel = new Log(mongoConfig);
@@ -16,7 +16,7 @@ export class Logger {
       errorType: 'Info',
       message: `[Info]: ${message}`,
     };
-    if (error) { insertLog.error = error; }
+    await this.setErrorMessage(insertLog, error);
     await this.pushIntoMongo(insertLog);
   }
 
@@ -25,7 +25,7 @@ export class Logger {
       errorType: 'Warn',
       message: `[Warn]: ${message}`,
     };
-    if (error) { insertLog.error = error; }
+    await this.setErrorMessage(insertLog, error);
     await this.pushIntoMongo(insertLog);
   }
 
@@ -33,8 +33,8 @@ export class Logger {
     const insertLog: ILog = {
       errorType: 'Error',
       message: `[Error]: ${message}`,
-      error,
     };
+    await this.setErrorMessage(insertLog, error);
     await this.pushIntoMongo(insertLog);
   }
 
@@ -42,5 +42,16 @@ export class Logger {
     if (this.isGroup) { log.groupId = this.groupId; }
     log.createdBy = 'logger';
     await this.logModel.insertOne(log);
+  }
+
+  private setErrorMessage(insertLog: ILog, error: Error) {
+    if (error) {
+      const errorLog: IErrorMessage = {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      };
+      insertLog.error = errorLog;
+    }
   }
 }
