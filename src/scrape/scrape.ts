@@ -1,8 +1,8 @@
 import * as Cheerio from 'cheerio';
 import * as _ from 'lodash';
-import { mongoConfig } from '../../config';
-import { Logger } from '../../lib/logger';
-import { IProduct, Product } from '../../mongo/models/product';
+import { mongoConfig } from '../config';
+import { Logger } from '../lib/logger';
+import { IProduct, Product } from '../mongo/models/product';
 import { HttpClient } from './http-client';
 import { ProductFactory } from './productFactory';
 

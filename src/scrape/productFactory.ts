@@ -1,4 +1,4 @@
-import { IProduct } from '../../mongo/models/product';
+import { IProduct } from '../mongo/models/product';
 
 export class ProductFactory {
   private batchId: number;

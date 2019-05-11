@@ -1,6 +1,6 @@
 import * as uuid from 'uuid/v4';
 import { mongoConfig } from '../config';
-import { ILog, Log, IErrorMessage } from '../mongo/models/log';
+import { IErrorMessage, ILog, Log } from '../mongo/models/log';
 
 export class Logger {
   private logModel = new Log(mongoConfig);

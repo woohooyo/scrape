@@ -1,5 +1,5 @@
 import { IRouterContext } from 'koa-router';
-import { IProduct } from '../mongo/models/product';
+import { IProduct } from '../../mongo/models/product';
 import { ProductService } from '../services/product-service';
 
 const productService = new ProductService();

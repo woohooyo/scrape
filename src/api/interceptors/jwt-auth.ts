@@ -1,8 +1,8 @@
 import { unauthorized } from 'boom';
 import * as jwt from 'jsonwebtoken';
 import { IRouterContext } from 'koa-router';
-import { jwtConfig, jwtIncludeRoutes } from '../config';
-import { IUserAuth } from '../mongo/models/user-auth';
+import { jwtConfig, jwtIncludeRoutes } from '../../config';
+import { IUserAuth } from '../../mongo/models/user-auth';
 import { UserAuthService } from '../services/user-auth-service';
 
 const userAuthService = new UserAuthService();

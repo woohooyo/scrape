@@ -1,5 +1,5 @@
 import * as Router from 'koa-router';
-import { IUserAuth } from '../mongo/models/user-auth';
+import { IUserAuth } from '../../mongo/models/user-auth';
 import { UserAuthService } from '../services/user-auth-service';
 
 const userAuthService = new UserAuthService();

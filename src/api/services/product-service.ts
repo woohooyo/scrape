@@ -1,5 +1,5 @@
-import { mongoConfig } from '../config';
-import { IProduct, Product } from '../mongo/models/product';
+import { mongoConfig } from '../../config';
+import { IProduct, Product } from '../../mongo/models/product';
 
 export class ProductService {
   private productModel = new Product(mongoConfig);

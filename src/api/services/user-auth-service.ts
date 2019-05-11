@@ -1,6 +1,6 @@
 import { FilterQuery } from 'mongodb';
-import { jwtConfig, mongoConfig } from '../config';
-import { IUserAuth, UserAuth } from '../mongo/models/user-auth';
+import { jwtConfig, mongoConfig } from '../../config';
+import { IUserAuth, UserAuth } from '../../mongo/models/user-auth';
 
 import { badRequest, notFound, unauthorized } from 'boom';
 import * as jwt from 'jsonwebtoken';
