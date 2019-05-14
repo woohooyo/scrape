@@ -6,15 +6,16 @@ import { badRequest, notFound, unauthorized } from 'boom';
 import * as jwt from 'jsonwebtoken';
 import * as _ from 'lodash';
 
+const userAuthModel = new UserAuth(mongoConfig);
+
 export class UserAuthService {
-  private userAuthModel = new UserAuth(mongoConfig);
 
   public async addUser(user: IUserAuth) {
     const existingUser = await this.getUser({ username: user.username });
     if (existingUser) {
       throw badRequest(`Username[${user.username}] already exist.`);
     }
-    await this.userAuthModel.insertOne({
+    await userAuthModel.insertOne({
       username: user.username,
       password: user.password,
       createdAt: new Date(),
@@ -42,7 +43,7 @@ export class UserAuthService {
       updatedBy: `User[${originUser._id}]`,
       updatedAt: new Date(),
     };
-    await this.userAuthModel.updateOne(updateContent, where);
+    await userAuthModel.updateOne(updateContent, where);
     const updatedUser = await this.getUser(where);
     return {
       message: 'Update user success!',
@@ -52,7 +53,7 @@ export class UserAuthService {
   }
 
   public async getUser(where: FilterQuery<IUserAuth>) {
-    return (await this.userAuthModel.get(where))[0];
+    return (await userAuthModel.get(where))[0];
   }
 
   public async getToken(user: IUserAuth) {
