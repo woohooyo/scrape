@@ -12,14 +12,19 @@ export class HttpClient {
     this.logger = logger;
   }
 
+  public isLastPage() {
+    return this.currentPage > this.totalPage;
+  }
+
   public async fetch(retry: number = 0) {
     try {
+      this.pages = [];
       do {
         const page = await this.getProductListPage();
         this.pages.push(page);
         this.setTotalPage(page);
         this.setNextPage();
-      } while (!this.isLastPage());
+      } while (!this.isLastPage() && this.currentPage % 100 !== 0);
       return this.pages;
     } catch (error) {
       if (retry < 3) {
@@ -81,10 +86,6 @@ export class HttpClient {
   private async getProductListPage() {
     const response = await Axios.get(`http://www.dataoke.com/qlist?page=${this.currentPage}`);
     return response.data;
-  }
-
-  private isLastPage() {
-    return this.currentPage > this.totalPage;
   }
 
   private setNextPage() {
