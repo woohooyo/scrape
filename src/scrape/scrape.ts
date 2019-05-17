@@ -79,7 +79,11 @@ export class Scrape {
 
   private async fillProduct(product: IProduct) {
     try {
-      const couponUrl = await this.getCouponUrl(product.productId);
+      const copywritingPage = await this.httpClient.getCopywritingPage(product.productId);
+      const $ = Cheerio.load(copywritingPage);
+      product.taoBaoUrl = this.getTaoBaoUrl($);
+      const couponUrl = await this.getCouponUrl($);
+      product.activityId = this.getActivityId(couponUrl);
       product.sellerId = this.getSellerId(couponUrl);
       product.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
     } catch (error) {
@@ -88,13 +92,19 @@ export class Scrape {
     }
   }
 
+  private getTaoBaoUrl($: CheerioStatic): string {
+    return $('a').last().text().trim();
+  }
+
+  private getActivityId(couponUrl: string): string {
+    return couponUrl.match(/activityId=(\w+)/i)[1];
+  }
+
   private getSellerId(couponUrl: string): string {
     return couponUrl.match(/sellerId=(\d+)/i)[1];
   }
 
-  private async getCouponUrl(productId: string): Promise<string> {
-    const copywritingPage = await this.httpClient.getCopywritingPage(productId);
-    const $ = Cheerio.load(copywritingPage);
+  private getCouponUrl($: CheerioStatic): string {
     return $('a').first().text().trim();
   }
 
@@ -104,7 +114,7 @@ export class Scrape {
   }
 
   private fillIsSellerCoupon() {
-    const groupedProducts = _.groupBy(this.products, (product) => product.sellerId);
+    const groupedProducts = _.groupBy(this.products, (product) => product.activityId);
     const sellerCouponProductIds: string[] = [];
     _.forIn(groupedProducts, (value, key) => {
       if (value.length > 1) {
