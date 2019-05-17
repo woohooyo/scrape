@@ -66,15 +66,21 @@ export class Scrape {
   }
 
   private async fillProducts() {
-    for (const product of this.products) {
-      await this.fillProduct(product);
+    const productPerBatch = 50;
+    let fillTasks = [];
+    for (let i = 0; i < this.products.length ; i++) {
+      fillTasks.push(this.fillProduct(this.products[i]));
+      if (i % productPerBatch === 0 || i === (this.products.length - 1)) {
+        await Promise.all(fillTasks);
+        fillTasks = [];
+      }
     }
   }
 
   private async fillProduct(product: IProduct) {
     try {
       const couponUrl = await this.getCouponUrl(product.productId);
-      product.sellerId = await this.getSellerId(couponUrl);
+      product.sellerId = this.getSellerId(couponUrl);
       product.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
     } catch (error) {
       console.log('fill product error');
@@ -82,7 +88,7 @@ export class Scrape {
     }
   }
 
-  private async getSellerId(couponUrl: string): Promise<string> {
+  private getSellerId(couponUrl: string): string {
     return couponUrl.match(/sellerId=(\d+)/i)[1];
   }
 
