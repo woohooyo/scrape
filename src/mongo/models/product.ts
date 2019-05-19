@@ -18,6 +18,8 @@ export interface IProduct extends Mongo.IEditableRecord {
   salesVolume?: string;
   commissionPercent?: string;
   coupon?: ICoupon;
+  taoBaoUrl?: string;
+  activityId?: string;
 }
 
 export class Product extends EditableMongoAccessor<IProduct> {

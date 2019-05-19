@@ -23,6 +23,7 @@ export class Scrape {
       const batchId = await this.getNextBatchId();
       this.productFactory.setBatchId(batchId);
       await this.getProducts();
+      await this.fillProducts();
       await this.fillIsSellerCoupon();
       await this.pushMongo();
     } catch (error) {
@@ -32,6 +33,7 @@ export class Scrape {
   }
 
   private async pushMongo() {
+    if (!this.products.length) { return; }
     const productBulk =  await this.productModel.initBulkOps();
     for (const product of this.products) {
       product.createdBy = 'scrape services';
@@ -48,42 +50,61 @@ export class Scrape {
   }
 
   private async getProducts() {
-    const pages = await this.httpClient.fetch();
-    for (const page of pages) {
-      const $ = Cheerio.load(page);
-      const productList = $('.goods-item-content');
-      if (productList && productList.length !== 0) {
-        const productTasks = [];
-        productList.each(async (index, product) => {
-          productTasks.push(this.fillProduct($, product, index * 100));
-        });
-        await Promise.all(productTasks);
+    do {
+      const pages = await this.httpClient.fetch();
+      for (const page of pages) {
+        const $ = Cheerio.load(page);
+        const productList = $('.goods-item-content');
+        if (productList && productList.length !== 0) {
+          productList.each(async (index, product) => {
+            const $el = $(product);
+            this.products.push(this.productFactory.getProduct($el));
+          });
+        }
+      }
+    } while (!this.httpClient.isLastPage());
+  }
+
+  private async fillProducts() {
+    const productPerBatch = 50;
+    let fillTasks = [];
+    for (let i = 0; i < this.products.length ; i++) {
+      fillTasks.push(this.fillProduct(this.products[i]));
+      if (i % productPerBatch === 0 || i === (this.products.length - 1)) {
+        await Promise.all(fillTasks);
+        fillTasks = [];
       }
     }
   }
 
-  private async fillProduct($: CheerioStatic, productContent: CheerioElement, delay: number = 0) {
+  private async fillProduct(product: IProduct) {
     try {
-      await new Promise(resolve => setTimeout(resolve, delay));
-      const $el = $(productContent);
-      const scrappedProduct = await this.productFactory.getProduct($el);
-      const couponUrl = await this.getCouponUrl(scrappedProduct.productId);
-      scrappedProduct.sellerId = await this.getSellerId(couponUrl);
-      scrappedProduct.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
-      this.products.push(scrappedProduct);
+      const copywritingPage = await this.httpClient.getCopywritingPage(product.productId);
+      const $ = Cheerio.load(copywritingPage);
+      product.taoBaoUrl = this.getTaoBaoUrl($);
+      const couponUrl = await this.getCouponUrl($);
+      product.activityId = this.getActivityId(couponUrl);
+      product.sellerId = this.getSellerId(couponUrl);
+      product.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
     } catch (error) {
       console.log('fill product error');
       await this.logger.warn('fill product error', error);
     }
   }
 
-  private async getSellerId(couponUrl: string): Promise<string> {
+  private getTaoBaoUrl($: CheerioStatic): string {
+    return $('a').last().text().trim();
+  }
+
+  private getActivityId(couponUrl: string): string {
+    return couponUrl.match(/activityId=(\w+)/i)[1];
+  }
+
+  private getSellerId(couponUrl: string): string {
     return couponUrl.match(/sellerId=(\d+)/i)[1];
   }
 
-  private async getCouponUrl(productId: string): Promise<string> {
-    const copywritingPage = await this.httpClient.getCopywritingPage(productId);
-    const $ = Cheerio.load(copywritingPage);
+  private getCouponUrl($: CheerioStatic): string {
     return $('a').first().text().trim();
   }
 
@@ -93,7 +114,7 @@ export class Scrape {
   }
 
   private fillIsSellerCoupon() {
-    const groupedProducts = _.groupBy(this.products, (product) => product.sellerId);
+    const groupedProducts = _.groupBy(this.products, (product) => product.activityId);
     const sellerCouponProductIds: string[] = [];
     _.forIn(groupedProducts, (value, key) => {
       if (value.length > 1) {

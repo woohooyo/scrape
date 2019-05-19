@@ -7,7 +7,7 @@ export class ProductFactory {
     this.batchId = batchId;
   }
 
-  public async getProduct (rawContent: Cheerio): Promise<IProduct> {
+  public getProduct (rawContent: Cheerio): IProduct {
     const product: IProduct = {
       coupon: {},
     };
