@@ -30,6 +30,7 @@ export class HttpClient {
       if (retry < 3) {
         retry ++;
         await this.logger.warn(`Get dataoke page retry: ${retry}`, error);
+        await new Promise(resolve => setTimeout(resolve, 100 * retry));
         await this.fetch(retry);
       }
       await this.logger.error('Get dataoke page error', error);
