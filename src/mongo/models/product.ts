@@ -5,6 +5,7 @@ export interface ICoupon {
   couponPrice?: number;
   remainingAmount?: number;
   totalAmount?: number;
+  receivedAmount?: number;
 }
 
 export interface IProduct extends Mongo.IEditableRecord {

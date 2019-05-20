@@ -21,6 +21,7 @@ export class ProductFactory {
       product.coupon.couponPrice = this.getCouponPrice(rawContent);
       product.coupon.remainingAmount = this.getRemainingAmount(rawContent);
       product.coupon.totalAmount = this.getTotalAmount(rawContent);
+      product.coupon.receivedAmount = product.coupon.totalAmount - product.coupon.remainingAmount;
       return product;
     } catch (error) {
       console.log(error);
