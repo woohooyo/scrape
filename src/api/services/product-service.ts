@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { Cursor } from 'mongodb';
 import { mongoConfig } from '../../config';
 import { Product } from '../../mongo/models/product';
 import { Queue } from '../../mongo/models/queue';
@@ -17,20 +18,27 @@ export class ProductService {
     }
     const filterWhere = this.getFilterWhere(query);
     filterWhere.batchId = latestProduct.batchId;
-    const filterProducts = await productModel.get(filterWhere);
-    const products = _.sortBy(filterProducts, (product) => Number(product.sellerId));
-    const page = Number(query.page);
-    const limit = Number(query.limit);
-    return {
-      totalProductsAmount: products.length,
-      products: products.slice((page - 1) * limit, (page * limit)),
-    };
+    const records = await productModel.getCursor(filterWhere, { sort: { sellerId: 1 } });
+    const result = this.getPageRecords(records, query);
+    return result;
   }
 
   public async manualScrapeProducts() {
     const queues = await queueModel.get({});
     if (queues.length > 0) { return; }
     runScrape('manual scrape');
+  }
+
+  private async getPageRecords<T extends Cursor>(records: T, query: IProductQuery) {
+    const { limit, page } = query;
+    if (page && limit) {
+      const numbPage = Number(page);
+      const numbLimit = Number(limit);
+      const total = await records.count();
+      const products = await records.skip((numbPage - 1) * numbLimit).limit(numbLimit).toArray();
+      return { totalProductsAmount: total, products };
+    }
+    return { products: await records.toArray()};
   }
 
   private getFilterWhere(filterCondition: IProductQuery) {
