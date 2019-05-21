@@ -38,24 +38,23 @@ export class HttpClient {
     }
   }
 
-  public async getCopywritingPage(productId: string) {
-    let retry = 0;
+  public async getCopywritingPage(productId: string, retry = 0) {
     try {
       const response = await Axios.get(`http://www.dataoke.com/gettpl?gid=${productId}`);
       return response.data;
     } catch (error) {
       if (retry < 3) {
         retry ++;
-        await this.logger.warn(`Get copywriting page retry: ${retry}`, error);
-        await this.fetch();
+        await this.logger.warn(`Get product[${productId}] copywriting page retry: ${retry}`, error);
+        await new Promise(resolve => setTimeout(resolve, 100 * retry));
+        await this.getCopywritingPage(productId, retry);
       }
-      await this.logger.error('Get copywriting page error', error);
+      await this.logger.error(`Get product[${productId}] copywriting page error`, error);
       throw error;
     }
   }
 
-  public async getTaoKeYiData(couponUrl: string) {
-    let retry = 0;
+  public async getTaoKeYiData(couponUrl: string, retry = 0) {
     try {
       const response = await Axios.post(
         'https://www.tkeasy.com/Interface/search',
@@ -68,10 +67,11 @@ export class HttpClient {
     } catch (error) {
       if (retry < 3) {
         retry ++;
-        await this.logger.warn(`Get taokeyi data retry: ${retry}`, error);
-        await this.fetch();
+        await this.logger.warn(`Get coupon[${couponUrl}] taokeyi data retry: ${retry}`, error);
+        await new Promise(resolve => setTimeout(resolve, 100 * retry));
+        await this.getTaoKeYiData(couponUrl, retry);
       }
-      await this.logger.error('Get taokeyi data error', error);
+      await this.logger.error(`Get coupon[${couponUrl}] taokeyi data error`, error);
       throw error;
     }
   }
