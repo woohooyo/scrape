@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { Cursor } from 'mongodb';
 import { mongoConfig } from '../../config';
-import { Product } from '../../mongo/models/product';
+import { IProduct, Product } from '../../mongo/models/product';
 import { Queue } from '../../mongo/models/queue';
 import { runScrape } from '../../scrape';
 import { IProductQuery } from '../routes/product';
@@ -14,12 +14,12 @@ export class ProductService {
   public async getProducts(query: IProductQuery) {
     const latestProduct = await productModel.getOne({}, { sort: { batchId: -1 } });
     if (!latestProduct || !latestProduct.batchId) {
-      return [];
+      return { totalProductsAmount: 0, products: [] };
     }
     const filterWhere = this.getFilterWhere(query);
     filterWhere.batchId = latestProduct.batchId;
     const records = await productModel.getCursor(filterWhere, { sort: { sellerId: 1 } });
-    const result = this.getPageRecords(records, query);
+    const result = await this.getPageRecords(records, query);
     return result;
   }
 
@@ -29,7 +29,7 @@ export class ProductService {
     runScrape('manual scrape');
   }
 
-  private async getPageRecords<T extends Cursor>(records: T, query: IProductQuery) {
+  private async getPageRecords(records: Cursor<IProduct>, query: IProductQuery) {
     const { limit, page } = query;
     if (page && limit) {
       const numbPage = Number(page);

@@ -13,6 +13,7 @@ export interface IProduct extends Mongo.IEditableRecord {
   isTaoKeYi?: boolean;
   productId?: string;
   sellerId?: string;
+  price?: number;
   isSellerCoupon?: boolean;
   title?: string;
   discountPrice?: number;

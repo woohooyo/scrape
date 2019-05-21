@@ -36,5 +36,6 @@ const productSchema: IJoiValidatorSchema = {
 };
 
 productRoute.get('/', validatorInterceptor(productSchema), ProductController.get);
+productRoute.get('/export', validatorInterceptor(productSchema), ProductController.download);
 
 productRoute.post('/', ProductController.post);
