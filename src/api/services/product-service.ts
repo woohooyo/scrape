@@ -18,7 +18,7 @@ export class ProductService {
     }
     const filterWhere = this.getFilterWhere(query);
     filterWhere.batchId = latestProduct.batchId;
-    const records = await productModel.getCursor(filterWhere, { sort: { sellerId: 1 } });
+    const records = await productModel.getCursor(filterWhere, { sort: { sellerId: -1 } });
     const result = await this.getPageRecords(records, query);
     return result;
   }

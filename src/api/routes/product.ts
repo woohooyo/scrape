@@ -1,6 +1,7 @@
 import * as Joi from 'joi';
 import * as Router from 'koa-router';
 import { ProductController } from '../controllers/product-controller';
+import { verifyAuth } from '../interceptors/jwt-auth';
 import { IJoiValidatorSchema, validatorInterceptor } from '../interceptors/validator';
 
 export const productRoute = new Router();
@@ -23,6 +24,7 @@ const productSchema: IJoiValidatorSchema = {
   query: Joi.object().keys({
     limit: Joi.number().required(),
     page: Joi.number().required(),
+    token: Joi.string(),
     productName: Joi.string(),
     minDiscountPrice: Joi.number(),
     maxDiscountPrice: Joi.number(),
@@ -35,7 +37,14 @@ const productSchema: IJoiValidatorSchema = {
   }).required(),
 };
 
+const jwtAuthQuery = async (ctx: Router.IRouterContext, next: any) => {
+  const token: string = ctx.request.query.token;
+  await verifyAuth(token);
+  await next();
+  return;
+};
+
 productRoute.get('/', validatorInterceptor(productSchema), ProductController.get);
-productRoute.get('/export', validatorInterceptor(productSchema), ProductController.download);
+productRoute.get('/export', jwtAuthQuery, validatorInterceptor(productSchema), ProductController.download);
 
 productRoute.post('/', ProductController.post);
