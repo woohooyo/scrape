@@ -112,7 +112,8 @@ export class Scrape {
 
   private async getIsTaoKeYi(couponUrl: string): Promise<boolean> {
     const taoKeYiData = await this.httpClient.getTaoKeYiData(couponUrl);
-    return _.includes(taoKeYiData, '大淘客');
+    const validProductList = _.filter(taoKeYiData.list, (item) => !item.statetext || !/已失效/g.test(item.statetext));
+    return !!validProductList.length;
   }
 
   private fillIsSellerCoupon() {
