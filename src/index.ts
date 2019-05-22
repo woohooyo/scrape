@@ -10,7 +10,7 @@ const timedScrape = async () => {
     if (!queues.length) {
       runScrape();
     }
-    await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60 * 2));
+    await new Promise(resolve => setTimeout(resolve, 1000 * 60 * 60 * 4));
   }
 };
 
