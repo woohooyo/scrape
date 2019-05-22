@@ -9,16 +9,20 @@ const userAuthService = new UserAuthService();
 
 export const jwtAuth = async (ctx: IRouterContext, next: any) => {
   if (jwtIncludeRoutes.includes(ctx.path)) {
-    try {
-      const token: string = ctx.request.headers.authorization;
-      const decoded = jwt.decode(token) as IUserAuth;
-      const apiUser = await userAuthService.getUser({ username: decoded.username });
-      jwt.verify(token, apiUser.password + jwtConfig.key, { algorithms: ['HS256'] });
-    } catch (error) {
-      console.log(error);
-      throw unauthorized('Authorization failed');
-    }
+    const token: string = ctx.request.headers.authorization;
+    await verifyAuth(token);
   }
   await next();
   return;
+};
+
+export const verifyAuth = async (token: string) => {
+  try {
+    const decoded = jwt.decode(token) as IUserAuth;
+    const apiUser = await userAuthService.getUser({ username: decoded.username });
+    jwt.verify(token, apiUser.password + jwtConfig.key, { algorithms: ['HS256'] });
+  } catch (error) {
+    console.log(error);
+    throw unauthorized('Authorization failed');
+  }
 };

@@ -1,17 +1,5 @@
 version: '3'
 services:
-  server:
-      build:
-        context: .
-        dockerfile: ./Dockerfile
-      depends_on:
-        - mongo
-      env_file:
-        - ./.env
-      ports:
-        - "8080:8080"
-      # command: /bin/sh -c "npm run init-mongo-dev-db && npm run init-mongo-indexes && ./scripts/start"
-      command: /bin/sh -c "node ./index.js"
   mongo:
     image: mongo:4.0
     restart: always

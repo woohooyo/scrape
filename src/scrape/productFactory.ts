@@ -8,19 +8,25 @@ export class ProductFactory {
   }
 
   public getProduct (rawContent: Cheerio): IProduct {
-    const product: IProduct = {
-      coupon: {},
-    };
-    product.title = this.getTitle(rawContent);
-    product.batchId = this.batchId;
-    product.discountPrice = this.getDiscountPrice(rawContent);
-    product.salesVolume = this.getSalesVolume(rawContent);
-    product.commissionPercent = this.getCommissionPercent(rawContent);
-    product.productId = this.getProductId(rawContent);
-    product.coupon.couponPrice = this.getCouponPrice(rawContent);
-    product.coupon.remainingAmount = this.getRemainingAmount(rawContent);
-    product.coupon.totalAmount = this.getTotalAmount(rawContent);
-    return product;
+    try {
+      const product: IProduct = {
+        coupon: {},
+      };
+      product.title = this.getTitle(rawContent);
+      product.batchId = this.batchId;
+      product.discountPrice = this.getDiscountPrice(rawContent);
+      product.salesVolume = this.getSalesVolume(rawContent);
+      product.commissionPercent = this.getCommissionPercent(rawContent);
+      product.productId = this.getProductId(rawContent);
+      product.coupon.couponPrice = this.getCouponPrice(rawContent);
+      product.coupon.remainingAmount = this.getRemainingAmount(rawContent);
+      product.coupon.totalAmount = this.getTotalAmount(rawContent);
+      product.coupon.receivedAmount = product.coupon.totalAmount - product.coupon.remainingAmount;
+      product.price = product.discountPrice + product.coupon.couponPrice;
+      return product;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   private getTitle(rawContent: Cheerio): string {

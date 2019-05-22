@@ -39,6 +39,19 @@ export class MongoAccessor<T extends object> {
     return this.mongoConnection;
   }
 
+  public async getCursor(
+    query: FilterQuery<T>, options?: FindOneOptions,
+    orderField?: string | object | object[], direction?: number,
+  ) {
+    await this.getDb();
+    const table = this.db.collection<T>(this.collectionName);
+    if (!_.isEmpty(orderField)) {
+      return await table.find(query, options).sort(orderField, direction);
+    } else {
+      return await table.find(query, options);
+    }
+  }
+
   public async get(
     query: FilterQuery<T>, options?: FindOneOptions,
     orderField?: string | object | object[], direction?: number) {

@@ -36,6 +36,7 @@ export class Scrape {
     if (!this.products.length) { return; }
     const productBulk =  await this.productModel.initBulkOps();
     for (const product of this.products) {
+      if (!product) { return; }
       product.createdBy = 'scrape services';
       product.createdAt = new Date();
       await productBulk.insert(product);
@@ -58,7 +59,8 @@ export class Scrape {
         if (productList && productList.length !== 0) {
           productList.each(async (index, product) => {
             const $el = $(product);
-            this.products.push(this.productFactory.getProduct($el));
+            const extraProduct = this.productFactory.getProduct($el);
+            if (extraProduct) { this.products.push(extraProduct); }
           });
         }
       }
@@ -66,7 +68,7 @@ export class Scrape {
   }
 
   private async fillProducts() {
-    const productPerBatch = 50;
+    const productPerBatch = 20;
     let fillTasks = [];
     for (let i = 0; i < this.products.length ; i++) {
       fillTasks.push(this.fillProduct(this.products[i]));
