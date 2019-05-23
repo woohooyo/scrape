@@ -13,6 +13,7 @@ export class DownloadService {
       product.remainingAmount = product.coupon.remainingAmount;
       product.isSellerCoupon = product.isSellerCoupon ? '是' : '否';
       product.isTaoKeYi = product.isTaoKeYi ? '是' : '否';
+      product.isTmall = product.isTmall ? '是' : '否';
       product.createdAt = moment(product.createdAt).format('YYYY/MM/DD hh:mm:ss');
       return product;
     });
@@ -22,6 +23,7 @@ export class DownloadService {
         {id: 'isTaoKeYi', title: '大淘客'},
         {id: 'title', title: '产品名称'},
         {id: 'taoBaoUrl', title: '淘宝链接'},
+        {id: 'isTmall', title: '天猫'},
         {id: 'price', title: '原价'},
         {id: 'isSellerCoupon', title: '店铺券'},
         {id: 'couponPrice', title: '优惠券价格'},

@@ -17,6 +17,7 @@ export interface IProductQuery {
   minReceivedCouponAmount?: string;
   maxReceivedCouponAmount?: string;
   isTaoKeYi?: string;
+  isTmall?: string;
   isSellerCoupon?: string;
 }
 
@@ -33,6 +34,7 @@ const productSchema: IJoiValidatorSchema = {
     minReceivedCouponAmount: Joi.number(),
     maxReceivedCouponAmount: Joi.number(),
     isTaoKeYi: Joi.bool(),
+    isTmall: Joi.bool(),
     isSellerCoupon: Joi.bool(),
   }).required(),
 };
