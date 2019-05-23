@@ -18,6 +18,7 @@ export class ProductFactory {
       product.salesVolume = this.getSalesVolume(rawContent);
       product.commissionPercent = this.getCommissionPercent(rawContent);
       product.productId = this.getProductId(rawContent);
+      product.isTmall = this.getIsTmall(rawContent);
       product.coupon.couponPrice = this.getCouponPrice(rawContent);
       product.coupon.remainingAmount = this.getRemainingAmount(rawContent);
       product.coupon.totalAmount = this.getTotalAmount(rawContent);
@@ -62,5 +63,9 @@ export class ProductFactory {
   private getTotalAmount(rawContent: Cheerio): number {
     const text = rawContent.find('span[class="margin-num"]').text().trim();
     return Number(text.match(/\/(\d+)$/)[1]);
+  }
+
+  private getIsTmall(rawContent: Cheerio): boolean {
+    return !!rawContent.find('.tag-tmall').attr('title');
   }
 }
