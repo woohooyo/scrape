@@ -45,6 +45,7 @@ export class ProductService {
     const where: any = {};
     if (filterCondition.productName) { where.title = new RegExp(filterCondition.productName, 'gi'); }
     if (filterCondition.isTaoKeYi) { where.isTaoKeYi = (filterCondition.isTaoKeYi === 'true'); }
+    if (filterCondition.isTmall) { where.isTmall = (filterCondition.isTmall === 'true'); }
     if (filterCondition.isSellerCoupon) { where.isSellerCoupon = (filterCondition.isSellerCoupon === 'true'); }
     if (filterCondition.maxDiscountPrice) {
       if (!where.discountPrice) { where.discountPrice = {}; }
