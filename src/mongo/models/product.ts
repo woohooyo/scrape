@@ -2,6 +2,7 @@ import { Mongo } from '../../lib/type';
 import { EditableMongoAccessor } from '../editable-mongo-accessor';
 
 export interface ICoupon {
+  couponUrl?: string;
   couponPrice?: number;
   remainingAmount?: number;
   totalAmount?: number;

@@ -84,10 +84,10 @@ export class Scrape {
       const copywritingPage = await this.httpClient.getCopywritingPage(product.productId);
       const $ = Cheerio.load(copywritingPage);
       product.taoBaoUrl = this.getTaoBaoUrl($);
-      const couponUrl = await this.getCouponUrl($);
-      product.activityId = this.getActivityId(couponUrl);
-      product.sellerId = this.getSellerId(couponUrl);
-      product.isTaoKeYi = await this.getIsTaoKeYi(couponUrl);
+      product.coupon.couponUrl = await this.getCouponUrl($);
+      product.activityId = this.getActivityId(product.coupon.couponUrl);
+      product.sellerId = this.getSellerId(product.coupon.couponUrl);
+      product.isTaoKeYi = await this.getIsTaoKeYi(product.coupon.couponUrl);
     } catch (error) {
       console.log('fill product error');
       await this.logger.warn('fill product error', error);
@@ -112,8 +112,7 @@ export class Scrape {
 
   private async getIsTaoKeYi(couponUrl: string): Promise<boolean> {
     const taoKeYiData = await this.httpClient.getTaoKeYiData(couponUrl);
-    const validProductList = _.filter(taoKeYiData.list, (item) => !item.statetext || !/已失效/g.test(item.statetext));
-    return !!validProductList.length;
+    return !!taoKeYiData.data.length;
   }
 
   private fillIsSellerCoupon() {
