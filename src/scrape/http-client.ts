@@ -56,13 +56,11 @@ export class HttpClient {
 
   public async getTaoKeYiData(couponUrl: string, retry = 0) {
     try {
-      const response = await Axios.post(
-        'https://www.tkeasy.com/Interface/search',
-        {
-          keyword: couponUrl,
-          groupid: 0,
-        },
+      const response = await Axios.get(
+        // tslint:disable-next-line:max-line-length
+        `http://taokeyi.com/find?count=0&findObj%5BfindType%5D=1&findObj%5Bj_url%5D=${encodeURIComponent(couponUrl)}&findObj%5BfindBigType%5D%5Bfind_wxwAn%5D=false&findObj%5BfindBigType%5D%5Bfind_ysj%5D=false&findObj%5BfindBigType%5D%5Bfind_tqg%5D=true&findObj%5BfindBigType%5D%5Bfind_jhs%5D=true&findObj%5BfindBigType%5D%5Bfind_rcd%5D=true&findObj%5BfindBigType%5D%5Bfind_gyd%5D=true&findObj%5BfindBigType%5D%5Bfind_yg%5D=true&findObj%5BfindQAll%5D=true`,
       );
+      if (/error/i.test(response.data.msg)) { throw new Error(response.data.msg); }
       return response.data;
     } catch (error) {
       if (retry < 3) {
